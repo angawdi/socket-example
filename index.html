@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>My Chat App</title>
+</head>
+<body>
+	<h2> Whoo, let's chat</h2>
+	<h3>What would you like to say?</h3>
+	<form id="chat-form">
+		<div>
+			Comment: 
+			<input id="chat" type="text"> 
+		</div>
+		<div>
+			<input type="text" id="name" value="anonymous">
+		</div>
+		<input type="submit" value="Say it">
+	</form>
+
+	<hr>
+	<h3>Ongoing Conversation</h3>
+	<div id="results"></div>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		var socket = io();
+
+
+		$(document).ready(function(){
+			console.log('jquery is working');
+			$('#chat-form').submit(function(e){
+				e.preventDefault();
+
+				// Grab the message
+				var message = $('#name').val() + ": " + $('#chat').val();
+
+				// Make sure message is not blank
+				if(!message){
+					return;
+				}
+				//Sanity check, form data coming thru!
+				console.log('form was clicked.You are saying', $('#chat').val());
+
+				//Send this message to the server
+				socket.emit('chat message', message);
+
+			
+
+				//Clear the box after submit
+				$('#chat').val('');
+			});
+		});
+
+		socket.on('chat message', function(msg){
+				// Creating a new paragraph tag, with the message passed in
+				var p = $('<p>').append(msg);
+
+				// Adding the new paragraph  tag to the results div
+				$('#results').append(p);
+		
+		});
+
+
+	</script>
+</body>
+</html>
